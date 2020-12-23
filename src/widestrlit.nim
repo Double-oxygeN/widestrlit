@@ -29,7 +29,7 @@ macro utf16*(strLit: string{lit}): untyped =
     sym = genSym(nskConst, "str")
     symStrLit = sym.toStrLit()
   result = quote do:
-    (; {.emit: ["const char16_t *", `symStrLit`, r" = u""", `strLit`, "\";"].}; let p {.importc: `symStrLit`, nodecl.}: Utf16String; p)
+    (; {.emit: ["const char16_t *", `symStrLit`, " = u\"", `strLit`, "\";"].}; let p {.importc: `symStrLit`, nodecl.}: Utf16String; p)
 
 
 macro utf32*(strLit: string{lit}): untyped =
@@ -37,7 +37,7 @@ macro utf32*(strLit: string{lit}): untyped =
     sym = genSym(nskConst, "str")
     symStrLit = sym.toStrLit()
   result = quote do:
-    (; {.emit: ["const char32_t *", `symStrLit`, r" = U""", `strLit`, "\";"].}; let p {.importc: `symStrLit`, nodecl.}: Utf32String; p)
+    (; {.emit: ["const char32_t *", `symStrLit`, " = U\"", `strLit`, "\";"].}; let p {.importc: `symStrLit`, nodecl.}: Utf32String; p)
 
 
 when isMainModule:
