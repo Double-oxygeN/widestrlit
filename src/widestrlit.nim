@@ -12,16 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from strutils import unindent
 import macros
 
 when defined(c) or defined(nimdoc):
   {.passC: "-std=c11".}
-  type
-    Char16* {.importc: "char16_t", header: "<uchar.h>".} = distinct uint16
-    Char32* {.importc: "char32_t", header: "<uchar.h>".} = distinct uint32
+  when defined(windows) or defined(linux):
+    {.pragma uchar, header: "<uchar.h>".}
 
-    Utf16String* {.importc: "char16_t *", header: "<uchar.h>".} = distinct ptr UncheckedArray[Char16]
-    Utf32String* {.importc: "char32_t *", header: "<uchar.h>".} = distinct ptr UncheckedArray[Char32]
+  else:
+    {.emit: """/*TYPESECTION*/
+    #ifndef __USE_ISOCXX11
+    typedef uint_least16_t char16_t;
+    typedef uint_least32_t char32_t;
+    #endif
+    """.unindent().}
+    template uchar {.pragma.}
+
+  type
+    Char16* {.importc: "char16_t", uchar.} = distinct uint16
+    Char32* {.importc: "char32_t", uchar.} = distinct uint32
+
+    Utf16String* {.importc: "char16_t *", uchar.} = distinct ptr UncheckedArray[Char16]
+    Utf32String* {.importc: "char32_t *", uchar.} = distinct ptr UncheckedArray[Char32]
 
 
 macro utf16*(strLit: string{lit}): untyped =
